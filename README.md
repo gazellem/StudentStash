@@ -1,4 +1,4 @@
-# CS319-group1
+# StudentStash
 StudentStash is Bilkent University's social marketplace, designed to facilitate various transactions among Bilkent students and staff. The idea behind this initiative was born out of the absence of a unified and dependable social platform for students to communicate their requirements for flatmates/roommates, rentals, or the purchase of second-hand items. 
 Currently available platforms do not adequately empower students to efficiently search for their needs or discover previous announcements that may align with their requirements. It also promotes user socialization by offering forums, chats, sections to find companions for certain activities, etc. StudentStash aims to address this issue by serving as a platform for Bilkenters to buy, sell, lend, donate items, search for lost belongings, or find housing/roommates.
 The ultimate goal in developing this platform is to make campus life more convenient and sustainable for all Bilkenters.
