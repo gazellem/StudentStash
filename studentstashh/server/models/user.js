@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const options = {discriminatorKey: 'type'}
+
 
 const userSchema  = new mongoose.Schema({
     username: {
@@ -13,12 +15,38 @@ const userSchema  = new mongoose.Schema({
         type: String,
         required: true
     },
+    warnCount: {
+        type: Number,
+        default: 0
+    },
     savedListings: [{
         type: mongoose.Schema.Types.ObjectId,
         default: '',
         ref: 'Listing'
+    }],
+    ownListings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        default: '',
+        ref: 'Listing'
+    }],
+    blockedUsers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        default: '',
+        ref: 'User'
+    }],
 
-    }]
-})
+},options)
 
-module.exports = mongoose.model('User',userSchema)
+const User = mongoose.model('User',userSchema)
+
+/*
+const adminSchema = Listing.discriminator('Admin',new mongoose.Schema({
+    userType: {
+        type: String,
+        required: true
+    }
+},options))
+*/
+
+
+module.exports = User

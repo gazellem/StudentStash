@@ -11,7 +11,7 @@ const getAllUsers = asyncHandler(async(req,res) => {
     res.json(users)
 })
 const createUser = asyncHandler(async (req,res) => {
-    const {username, email, password,savedListings } = req.body
+    const {username, email, password } = req.body
     if(!username || !password || !email){
         return res.status(400).json({message: 'All fields are required!'})
     }
@@ -27,7 +27,7 @@ const createUser = asyncHandler(async (req,res) => {
     //Hash the password
     const hashedPwd = await bcrypt.hash(password,10) //salt rounds
 
-    const userObject = {username, email, "password":hashedPwd, savedListings}
+    const userObject = {username, email, "password": hashedPwd}
 
     //create and store new user
     const user = await User.create(userObject)
@@ -41,7 +41,7 @@ const createUser = asyncHandler(async (req,res) => {
 })
 
 const updateUser = asyncHandler(async (req,res) => {
-    const {id, username,email,password,savedListings} = req.body
+    const {id, username,email,password} = req.body
 
     //confirm data
     if(!id || !username || !password || !email){
@@ -62,7 +62,6 @@ const updateUser = asyncHandler(async (req,res) => {
     }
 
     user.username = username
-    user.savedListings = savedListings
     user.email = email
     if(password){
         user.password = await bcrypt.hash(password,10)
@@ -71,9 +70,32 @@ const updateUser = asyncHandler(async (req,res) => {
 
     res.json({message: `${updatedUser.username} updated`})
 
-
 })
 
+const setPassword = asyncHandler(async (req,res) => {
+    const {username,old_password,new_password} = req.body
+    const foundUser = await User.findOne({username}).exec()
+    const match = bcrypt.compare(old_password,foundUser.password)
+    if(match)
+        foundUser.password = bcrypt.hash(new_password, 10)
+    else
+        return res.status(409).json({message: "wrong password"})
+    res.json({message: `Password updated.`})
+})
+const unsaveListing = asyncHandler( async(req,res) => {
+    const {username, listing_id} = req.body
+
+    const foundListing = Listing.findOne({_id: listing_id})
+
+    User.updateOne({username},{$pull: {savedListings: foundListing}})
+})
+const saveListing = asyncHandler(async(req,res) => {
+    const {username,listing_id} = req.body
+
+    const foundListing = Listing.findOne({_id: listing_id})
+    User.updateOne({username},{$addToSet: {savedListings: foundListing }})
+    res.json({message: 'Listing saved.'})
+})
 const deleteUser = asyncHandler(async (req,res) => {
     const { id } = req.body
 
@@ -96,5 +118,8 @@ module.exports = {
     getAllUsers,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    setPassword,
+    saveListing,
+    unsaveListing
 }
