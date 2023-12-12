@@ -3,7 +3,7 @@ var util = require('util')
 
 const options = {discriminatorKey: 'type'}
 
-const listingSchema  = new mongoose.Schema({
+const listingSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
@@ -18,18 +18,17 @@ const listingSchema  = new mongoose.Schema({
         ref: 'User'
     }
 }, options)
-const Listing = mongoose.model('Listing',listingSchema)
+const Listing = mongoose.model('Listing', listingSchema)
 
 
-
-const borrowingListingSchema = Listing.discriminator('BorrowingListing',new mongoose.Schema({
+const borrowingListingSchema = Listing.discriminator('BorrowingListing', new mongoose.Schema({
     endDate: {
         type: String,
         required: true
     }
-},options))
+}, options))
 
-const mateListingSchema = Listing.discriminator('MateListing',new mongoose.Schema({
+const mateListingSchema = Listing.discriminator('MateListing', new mongoose.Schema({
     flatType: {
         type: String,
         required: true
@@ -38,9 +37,9 @@ const mateListingSchema = Listing.discriminator('MateListing',new mongoose.Schem
         type: Number,
         required: true
     }
-},options))
+}, options))
 
-const secondHandListingSchema = Listing.discriminator('SecondHandListing',new mongoose.Schema({
+const secondHandListingSchema = Listing.discriminator('SecondHandListing', new mongoose.Schema({
     price: {
         type: Number,
         required: true
@@ -49,9 +48,9 @@ const secondHandListingSchema = Listing.discriminator('SecondHandListing',new mo
         type: String,
         required: true
     }
-},options))
+}, options))
 
-const activityBuddyListingSchema = Listing.discriminator('ActivityBuddyListing',new mongoose.Schema({
+const activityBuddyListingSchema = Listing.discriminator('ActivityBuddyListing', new mongoose.Schema({
     date: {
         type: String,
         required: true
@@ -64,16 +63,16 @@ const activityBuddyListingSchema = Listing.discriminator('ActivityBuddyListing',
         type: Number,
         required: true
     }
-},options))
+}, options))
 
-const donationListingSchema = Listing.discriminator('DonationListing',new mongoose.Schema({
+const donationListingSchema = Listing.discriminator('DonationListing', new mongoose.Schema({
     condition: {
         type: String,
         required: true
     }
-},options))
+}, options))
 
-const lostAndFoundListingSchema = Listing.discriminator('LostAndFoundListing',new mongoose.Schema({
+const lostAndFoundListingSchema = Listing.discriminator('LostAndFoundListing', new mongoose.Schema({
     date: {
         type: String,
         required: true
@@ -82,7 +81,7 @@ const lostAndFoundListingSchema = Listing.discriminator('LostAndFoundListing',ne
         type: String,
         required: true
     }
-},options))
+}, options))
 
 
 module.exports = Listing

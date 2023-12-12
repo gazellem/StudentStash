@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const options = {discriminatorKey: 'type'}
 
 
-const userSchema  = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true
@@ -35,9 +35,9 @@ const userSchema  = new mongoose.Schema({
         ref: 'User'
     }],
 
-},options)
+}, options)
 
-const User = mongoose.model('User',userSchema)
+const User = mongoose.model('User', userSchema)
 
 /*
 const adminSchema = Listing.discriminator('Admin',new mongoose.Schema({

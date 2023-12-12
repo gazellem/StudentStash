@@ -19,25 +19,23 @@ app.use('/', express.static(path.join(__dirname, 'public')))
 app.use('/', require('./routes/root'))
 app.use('/auth', require('./routes/authRoutes'))
 app.use('/users', require('./routes/userRoutes'))
-
+app.use('/listings',require('./routes/listingRoutes'))
 
 connectDB()
 
-app.all('*',(req,res) =>{
+app.all('*', (req, res) => {
     res.status(404)
-    if(req.accepts('html')){
-        res.sendFile(path.join(__dirname,'views','error.html'))
-    }
-    else if(req.accepts('json')){
+    if (req.accepts('html')) {
+        res.sendFile(path.join(__dirname, 'views', 'error.html'))
+    } else if (req.accepts('json')) {
         res.sendFile({message: 'error'})
     }
 
 })
 
-
 app.use(errorHandler)
 
-mongoose.connection.once('open',() => {
+mongoose.connection.once('open', () => {
     console.log('Connected to the database')
-    app.listen(PORT,() => console.log(`Server running on PORT ${PORT}`))
+    app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
 })
