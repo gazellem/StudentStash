@@ -6,7 +6,6 @@ const asyncHandler = require('express-async-handler')
 // @get
 const getAllChats = asyncHandler(async(req,res) =>{
     const chat = await Chat.find().lean()
-
     if(!chat)
         return res.json(400).json({message: 'No chat found'})
     res.json(chat)
@@ -17,20 +16,20 @@ const getChat = asyncHandler(async(req,res) => {
     const {receiver_username, sender_username} = req.body
 
     const receiver = await User.findOne({username: receiver_username}).lean().exec()
-    const sender = await User.findOne({username: sender_username}).lean()
+    const sender = await User.findOne({username: sender_username}).lean().exec()
 
-    const chat = await Chat.findOne({$and: [{sender}, {receiver}]})
+    const chat = await Chat.findOne({$and: [{sender}, {receiver}]}).lean().exec()
     if(!chat)
         return res.status(400).json({message: 'Chat not found.'})
 
     res.json(chat)
 })
 
-// @post
+// @post,
 const createChat = asyncHandler(async(req,res) => {
     const {receiver_username, sender_username} = req.body
     const receiver = await User.findOne({username: receiver_username}).lean().exec()
-    const sender = await User.findOne({username: sender_username}).lean()
+    const sender = await User.findOne({username: sender_username}).lean().exec()
 
     const duplicateChat = await Chat.findOne({$and: [{sender}, {receiver}]})
 
@@ -50,8 +49,12 @@ const createChat = asyncHandler(async(req,res) => {
 
 // @delete
 const deleteChat = asyncHandler(async(req,res) => {
+   /* const {receiver_username, sender_username} = req.body
     //find chat
+    const receiver = await User.findOne({receiver_username}).lean().exec()
+    const sender = await User.findOne({sender_username}).lean().exec()
 
+    const chat = await Chat.findOne({$and: [{receiver},{sender}]})*/
     //find all messages in the chat if any
 
     //delete messages if any

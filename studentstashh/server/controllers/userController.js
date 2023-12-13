@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 
 const getAllUsers = asyncHandler(async (req, res) => {
-    const users = await User.find().select('-password').lean()
+    const users = await User.find().lean()
     if (!users) {
         return res.status(400).json({message: 'No users found'})
     }
@@ -73,7 +73,8 @@ const updateUser = asyncHandler(async (req, res) => {
     user.username = username
     user.email = email
     if (password) {
-        user.password = await bcrypt.hash(password, 10)
+        const hashedPwd = await bcrypt.hash(password, 10)
+        await User.findOneAndUpdate({username},{password: hashedPwd})
     }
     const updatedUser = await user.save()
 
@@ -84,11 +85,13 @@ const setPassword = asyncHandler(async (req, res) => {
     const {username, old_password, new_password} = req.body
     const foundUser = await User.findOne({username}).lean().exec()
     const match = bcrypt.compare(old_password, foundUser.password)
-    if (match)
-        foundUser.password = bcrypt.hash(new_password, 10)
+    if (old_password === foundUser.password)
+    {
+        await User.findOneAndUpdate({username},{password: new_password})
+        return res.json({message: `Password updated.`})
+    }
     else
         return res.status(409).json({message: "wrong password"})
-    res.json({message: `Password updated.`})
 })
 
 const unsaveListing = asyncHandler(async (req, res) => {
@@ -106,33 +109,33 @@ const saveListing = asyncHandler(async (req, res) => {
     const {username, listing_id} = req.body
 
     const foundListing = await Listing.findOne({_id: listing_id}).lean().exec()
-    User.updateOne({username}, {$addToSet: {savedListings: foundListing}})
+    const saved = await User.updateOne({username}, {$addToSet: {savedListings: foundListing}}).lean().exec()
     res.json({message: 'Listing saved.'})
 })
 
 const deleteUser = asyncHandler(async (req, res) => {
-    const {id} = req.body
+    const {username} = req.body
 
-    if (!id) {
-        return res.status(400).json({message: 'User id required.'})
-    }
-
-    const user = await User.findById(id).lean().exec()
+    const user = await User.findOne({username}).lean().exec()
     if (!user) {
         return res.status(400).json({message: 'User not found'})
     }
 
-    const result = await user.deleteOne()
+    const result = await User.deleteOne({username}).lean()
 
-    const reply = `Username ${result.username} with ID: ${result.id} deleted`
+    const reply = `${result.username} deleted`
     res.json(reply)
 })
 
+const blockUser = asyncHandler(async(req,res) => {
+
+})
 module.exports = {
     getAllUsers,
     getUserByUsername,
     createUser,
     updateUser,
+    blockUser,
     deleteUser,
     setPassword,
     saveListing,

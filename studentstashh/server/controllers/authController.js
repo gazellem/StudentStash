@@ -13,13 +13,15 @@ const login = asyncHandler(async (req, res) => {
         return res.status(400).json({message: 'Enter a username and a password'})
     }
 
-    const foundUser = await User.findOne({email}).exec()
+    const foundUser = await User.findOne({email}).lean()
+
+
     if (!foundUser) {
         return res.status(400).json({message: 'Email not found'})
     }
 
-    const match = bcrypt.compare(password, foundUser.password)
-    if (!match) {
+    const match = await bcrypt.compare(password, foundUser.password)
+    if (!match){
         return res.status(401).json({message: 'Wrong password'})
     }
 

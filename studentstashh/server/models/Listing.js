@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 var util = require('util')
-
 const options = {discriminatorKey: 'type'}
 
 const listingSchema = new mongoose.Schema({
@@ -19,7 +18,6 @@ const listingSchema = new mongoose.Schema({
     }
 }, options)
 const Listing = mongoose.model('Listing', listingSchema)
-
 
 const borrowingListingSchema = Listing.discriminator('BorrowingListing', new mongoose.Schema({
     endDate: {

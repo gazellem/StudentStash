@@ -20,7 +20,8 @@ app.use('/', require('./routes/root'))
 app.use('/auth', require('./routes/authRoutes'))
 app.use('/users', require('./routes/userRoutes'))
 app.use('/listings',require('./routes/listingRoutes'))
-
+app.use('/chat',require('./routes/chatRoutes'))
+app.use('/messages',require('./routes/messageRoutes'))
 connectDB()
 
 app.all('*', (req, res) => {
@@ -30,7 +31,6 @@ app.all('*', (req, res) => {
     } else if (req.accepts('json')) {
         res.sendFile({message: 'error'})
     }
-
 })
 
 app.use(errorHandler)

@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const Message = require('../models/Message')
 const asyncHandler = require('express-async-handler')
+const Chat = require("../models/Chat");
 
 
 // @post
@@ -10,13 +11,21 @@ const createMessage = asyncHandler(async (req, res) => {
     const from = await User.findOne({username: sender_username}).lean().exec()
     const to = await User.findOne({username: receiver_username}).lean().exec()
 
+    //if chat does not exist, create new chat.
+    let foundChat = await Chat.findOne({$and: [{sender : from}, {receiver : to}]}).lean().exec()
+    if(!foundChat)
+        foundChat = await Chat.create({"receiver": to,"sender": from})
+
+
 
     const date = new Date().toLocaleDateString()
     const messageObject = {from, to, date, content}
     const message = await Message.create(messageObject)
 
-    if (message)
-        res.status(201).json({message: `Message created.`})
+    const chatMessage = await Chat.updateOne({$and: [{sender:from}, {receiver: to}]},{$addToSet: {messages : message}})
+
+    if (message && chatMessage)
+        res.status(201).json({message: `Message created and added to chat`})
     else
         res.status(400).json({message: `Failed to create message.`})
 
