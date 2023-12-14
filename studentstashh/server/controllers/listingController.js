@@ -1,5 +1,7 @@
-const Listing = require('../models/Listing')
+const {Listing} = require('../models/Listing')
 const asyncHandler = require('express-async-handler')
+const {BorrowingListing} = require("../models/Listing");
+const User = require('../models/User')
 
 const getAllListings = asyncHandler(async(req,res) => {
     const listings = await Listing.find().lean()
@@ -9,21 +11,24 @@ const getAllListings = asyncHandler(async(req,res) => {
     res.json(listings)
 })
 const createListing = asyncHandler(async (req,res) => {
-    const {type,title,desc,owner_username} = req.body
-    const owner = await User.findOne({username: owner_username}).lean().exec()
+    const {type,title,description,owner_username} = req.body
+    const owner = await User.findOne({username: owner_username})
 
-   /*
-   if(type.equals('BorrowingListing')){
+   if(type === 'BorrowingListing'){
         const {endDate} = req.body
-        const listingObj = {title, "description": desc,owner,endDate}
-        const listing = await ?????.create(listingObj)
+        const borrowingListingObj = {title,"description": description,owner,endDate,type}
+        const listing = await Listing.create(borrowingListingObj)
 
         if(!listing)
             return res.status(400).json({message: "Listing could not be created."})
         else
+        {
+            await User.updateOne({owner_username},{$addToSet: {ownListings: listing}})
             return res.status(201).json({message: "Listing sucessfully created."})
+        }
+
     }
-   */
+
 })
 
 const updateListing = asyncHandler(async (req,res) => {

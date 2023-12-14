@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 var util = require('util')
 const options = {discriminatorKey: 'type'}
+const autoIncrement = require('mongoose-auto-increment')
 
 const listingSchema = new mongoose.Schema({
     title: {
@@ -17,6 +18,14 @@ const listingSchema = new mongoose.Schema({
         ref: 'User'
     }
 }, options)
+
+listingSchema.plugin(autoIncrement.plugin,{
+    model: 'Listing',
+    field: 'id',
+    startAt: 1,
+    incrementBy: 1
+})
+
 const Listing = mongoose.model('Listing', listingSchema)
 
 const borrowingListingSchema = Listing.discriminator('BorrowingListing', new mongoose.Schema({
@@ -81,5 +90,12 @@ const lostAndFoundListingSchema = Listing.discriminator('LostAndFoundListing', n
     }
 }, options))
 
-
-module.exports = Listing
+module.exports = {
+    Listing,
+    BorrowingListing: mongoose.model('BorrowingListing'),
+    MateListing: mongoose.model('MateListing'),
+    DonationListing: mongoose.model('DonationListing'),
+    SecondHandListing: mongoose.model('SecondHandListing'),
+    ActivityBuddyListing: mongoose.model('ActivityBuddyListing'),
+    LostAndFoundListing: mongoose.model('LostAndFoundListing')
+}

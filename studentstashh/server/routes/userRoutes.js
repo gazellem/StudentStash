@@ -6,9 +6,11 @@ const userController = require('../controllers/userController')
 router.route('/')
     .get(userController.getAllUsers)
 
-router.route('/update-user')
+router.route('/update')
     .patch(userController.updateUser)
 
+router.route('/block')
+    .post(userController.blockUser)
 router.route('/get-by-username')
     .get(userController.getUserByUsername)
 
@@ -26,5 +28,11 @@ router.route('/save-listing')
 
 router.route('/unsave-listing')
     .patch(userController.unsaveListing)
+
+router.route('/get-blocked-users')
+    .get(userController.getBlockedUsers)
+
+router.route('/unblock')
+    .post(userController.unblockUser)
 
 module.exports = router

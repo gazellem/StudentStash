@@ -2,6 +2,7 @@ const User = require('../models/User')
 const Listing = require('../models/Listing')
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
+const {hash} = require("bcrypt");
 
 const getAllUsers = asyncHandler(async (req, res) => {
     const users = await User.find().lean()
@@ -84,10 +85,11 @@ const updateUser = asyncHandler(async (req, res) => {
 const setPassword = asyncHandler(async (req, res) => {
     const {username, old_password, new_password} = req.body
     const foundUser = await User.findOne({username}).lean().exec()
-    const match = bcrypt.compare(old_password, foundUser.password)
-    if (old_password === foundUser.password)
+    const match = await bcrypt.compare(old_password, foundUser.password)
+    if (match)
     {
-        await User.findOneAndUpdate({username},{password: new_password})
+        const hashedPwd = await bcrypt.hash(new_password)
+        await User.findOneAndUpdate({username},{password: hashedPwd})
         return res.json({message: `Password updated.`})
     }
     else
@@ -100,7 +102,7 @@ const unsaveListing = asyncHandler(async (req, res) => {
     const foundListing = await Listing.findOne({_id: listing_id}).lean().exec()
 
     if (!foundListing)
-        User.updateOne({username}, {$pull: {savedListings: foundListing}})
+       await User.updateOne({username}, {$pull: {savedListings: foundListing}})
 
     res.json({message: 'Listing saved.'})
 })
@@ -128,7 +130,30 @@ const deleteUser = asyncHandler(async (req, res) => {
 })
 
 const blockUser = asyncHandler(async(req,res) => {
+    const {blocker_username, blocked_username} = req.body
 
+    const blocked_user = await User.findOne({username: blocked_username}).lean()
+    const blocker = await User.findOneAndUpdate({username: blocker_username},{$addToSet: {blockedUsers: blocked_user}}).lean().exec()
+    res.json({message: `${blocked_user.username} is blocked by ${blocker_username}` })
+
+})
+const getBlockedUsers = asyncHandler(async(req,res) => {
+    const {username} = req.body
+
+    const user = await User.findOne({username}).lean()
+            res.json(user.blockedUsers)
+})
+const unblockUser = asyncHandler(async(req,res) => {
+    const {username,blocked_username} = req.body
+
+    const blocked_user = await User.findOne({username: blocked_username}).lean()
+
+    let user = await User.findOne({username}).lean()
+
+
+    const updated = await User.updateOne({username},{$pull: {blockedUsers: blocked_user}})
+
+    res.json({message: `${blocked_username} unblocked` })
 })
 module.exports = {
     getAllUsers,
@@ -139,5 +164,7 @@ module.exports = {
     deleteUser,
     setPassword,
     saveListing,
-    unsaveListing
+    unsaveListing,
+    getBlockedUsers,
+    unblockUser
 }
