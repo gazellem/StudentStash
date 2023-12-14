@@ -54,8 +54,21 @@ const getMessagesByReceiver = asyncHandler(async (req, res) => {
 
     res.json(messages)
 })
+
+// @get
+const getMessages = asyncHandler(async(req,res) => {
+    const {receiver_username, sender_username} = req.body
+
+    const receiver = await User.findOne({username: receiver_username}).lean()
+    const sender = await User.findOne({username: sender_username}).lean()
+
+    const messages = await Message.find({$and: [{to: receiver},{from: sender}]}).populate('to').populate('from').lean()
+    res.json(messages)
+})
+
 module.exports = {
     createMessage,
     getMessagesByReceiver,
-    getMessagesBySender
+    getMessagesBySender,
+    getMessages
 }

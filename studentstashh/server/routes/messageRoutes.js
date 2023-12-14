@@ -11,5 +11,7 @@ router.route('/get-messages-by-receiver')
 router.route('/get-messages-by-sender')
     .get(messageController.getMessagesBySender)
 
+router.route('/get-messages')
+    .get(messageController.getMessages)
 
 module.exports = router

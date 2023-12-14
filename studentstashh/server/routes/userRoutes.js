@@ -24,15 +24,18 @@ router.route('/change-password')
     .post(userController.setPassword)
 
 router.route('/save-listing')
-    .patch(userController.saveListing)
+    .post(userController.saveListing)
 
 router.route('/unsave-listing')
-    .patch(userController.unsaveListing)
+    .post(userController.unsaveListing)
 
 router.route('/get-blocked-users')
     .get(userController.getBlockedUsers)
 
 router.route('/unblock')
     .post(userController.unblockUser)
+
+router.route('/get-id')
+    .get(userController.getUserId)
 
 module.exports = router

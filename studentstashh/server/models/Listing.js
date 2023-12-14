@@ -19,13 +19,6 @@ const listingSchema = new mongoose.Schema({
     }
 }, options)
 
-listingSchema.plugin(autoIncrement.plugin,{
-    model: 'Listing',
-    field: 'id',
-    startAt: 1,
-    incrementBy: 1
-})
-
 const Listing = mongoose.model('Listing', listingSchema)
 
 const borrowingListingSchema = Listing.discriminator('BorrowingListing', new mongoose.Schema({

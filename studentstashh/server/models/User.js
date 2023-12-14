@@ -34,6 +34,11 @@ const userSchema = new mongoose.Schema({
         default: '',
         ref: 'User'
     }],
+    chats: [{
+        type: mongoose.Schema.Types.ObjectId,
+        default: '',
+        ref: 'Chat'
+    }]
 
 
 }, options)

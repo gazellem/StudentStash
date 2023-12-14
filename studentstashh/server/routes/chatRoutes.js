@@ -9,4 +9,6 @@ router.route('/')
 router.route('/get-chat')
     .get(chatController.getChat)
 
+router.route('/delete')
+    .delete(chatController.deleteChat)
 module.exports = router

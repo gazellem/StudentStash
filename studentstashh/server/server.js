@@ -8,21 +8,23 @@ const dotenv = require("dotenv");
 const {logger} = require('./middleware/logger')
 const errorHandler = require('./middleware/errorHandler')
 const cookieParser = require('cookie-parser')
+const autoIncrement = require('mongoose-auto-increment')
 
 
 app.use(logger)
 dotenv.config();
 app.use(express.json())
 app.use(cookieParser())
-app.use('/', express.static(path.join(__dirname, 'public')))
 
+connectDB()
+
+app.use('/', express.static(path.join(__dirname, 'public')))
 app.use('/', require('./routes/root'))
 app.use('/auth', require('./routes/authRoutes'))
 app.use('/users', require('./routes/userRoutes'))
 app.use('/listings',require('./routes/listingRoutes'))
 app.use('/chat',require('./routes/chatRoutes'))
 app.use('/messages',require('./routes/messageRoutes'))
-connectDB()
 
 app.all('*', (req, res) => {
     res.status(404)

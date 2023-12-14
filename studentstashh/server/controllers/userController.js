@@ -1,5 +1,5 @@
 const User = require('../models/User')
-const Listing = require('../models/Listing')
+const {Listing} = require('../models/Listing')
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 const {hash} = require("bcrypt");
@@ -97,21 +97,27 @@ const setPassword = asyncHandler(async (req, res) => {
 })
 
 const unsaveListing = asyncHandler(async (req, res) => {
-    const {username, listing_id} = req.body
-
-    const foundListing = await Listing.findOne({_id: listing_id}).lean().exec()
-
-    if (!foundListing)
-       await User.updateOne({username}, {$pull: {savedListings: foundListing}})
-
-    res.json({message: 'Listing saved.'})
+    const {username, title,owner_username,type} = req.body
+    const owner = await User.findOne({username: owner_username}).lean()
+    const foundListing = await Listing.findOne({$and: [{title},{owner},{type}]}).lean().exec()
+    if(!foundListing)
+        return res.status(400).json({message: 'Listing does not exist.'})
+    const user = await User.findOneAndUpdate({username},{$pull: {savedListings: foundListing._id}}).lean()
+    if(!user)
+        return res.status(400).json({message: 'User does not exist'})
+    res.json({message: 'Listing unsaved.'})
 })
 
 const saveListing = asyncHandler(async (req, res) => {
-    const {username, listing_id} = req.body
+    const {username, title,owner_username,type} = req.body
 
-    const foundListing = await Listing.findOne({_id: listing_id}).lean().exec()
-    const saved = await User.updateOne({username}, {$addToSet: {savedListings: foundListing}}).lean().exec()
+    const owner = await User.findOne({username: owner_username}).lean()
+    const foundListing = await Listing.findOne({$and: [{title},{owner},{type}]}).lean().exec()
+    if(!foundListing)
+        return res.status(400).json({message: 'Listing does not exist.'})
+    const user = await User.findOneAndUpdate({username},{$addToSet: {savedListings: foundListing._id}}).lean()
+    if(!user)
+        return res.status(400).json({message: 'User does not exist'})
     res.json({message: 'Listing saved.'})
 })
 
@@ -133,16 +139,24 @@ const blockUser = asyncHandler(async(req,res) => {
     const {blocker_username, blocked_username} = req.body
 
     const blocked_user = await User.findOne({username: blocked_username}).lean()
-    const blocker = await User.findOneAndUpdate({username: blocker_username},{$addToSet: {blockedUsers: blocked_user}}).lean().exec()
+    const blocker = await User.updateOne({username: blocker_username},{$addToSet: {blockedUsers: blocked_user._id}})
     res.json({message: `${blocked_user.username} is blocked by ${blocker_username}` })
 
 })
+
+const getUserId = asyncHandler(async(req,res) => {
+    const {username} = req.body
+    const user = await User.findOne({username}).lean()
+    res.json(user.username)
+})
+
 const getBlockedUsers = asyncHandler(async(req,res) => {
     const {username} = req.body
 
-    const user = await User.findOne({username}).lean()
-            res.json(user.blockedUsers)
+    const user = await User.findOne({username}).populate('blockedUsers').lean()
+    res.json(user.blockedUsers)
 })
+
 const unblockUser = asyncHandler(async(req,res) => {
     const {username,blocked_username} = req.body
 
@@ -151,7 +165,7 @@ const unblockUser = asyncHandler(async(req,res) => {
     let user = await User.findOne({username}).lean()
 
 
-    const updated = await User.updateOne({username},{$pull: {blockedUsers: blocked_user}})
+    const updated = await User.updateOne({username},{$pull: {blockedUsers: blocked_user._id}})
 
     res.json({message: `${blocked_username} unblocked` })
 })
@@ -166,5 +180,6 @@ module.exports = {
     saveListing,
     unsaveListing,
     getBlockedUsers,
-    unblockUser
+    unblockUser,
+    getUserId
 }
