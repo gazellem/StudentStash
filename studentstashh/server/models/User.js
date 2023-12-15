@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const options = {discriminatorKey: 'type'}
 
 
 const userSchema = new mongoose.Schema({
@@ -21,38 +20,30 @@ const userSchema = new mongoose.Schema({
     },
     savedListings: [{
         type: mongoose.Schema.Types.ObjectId,
-        default: '',
         ref: 'Listing'
     }],
     ownListings: [{
         type: mongoose.Schema.Types.ObjectId,
-        default: '',
         ref: 'Listing'
     }],
     blockedUsers: [{
         type: mongoose.Schema.Types.ObjectId,
-        default: '',
         ref: 'User'
     }],
     chats: [{
         type: mongoose.Schema.Types.ObjectId,
-        default: '',
         ref: 'Chat'
-    }]
-
-
-}, options)
+    }],
+    type: {
+        type: String,
+        default: 'User'
+    },
+    banned: {
+        type: Boolean,
+        default: false
+    }
+})
 
 const User = mongoose.model('User', userSchema)
-
-/*
-const adminSchema = Listing.discriminator('Admin',new mongoose.Schema({
-    userType: {
-        type: String,
-        required: true
-    }
-},options))
-*/
-
 
 module.exports = User

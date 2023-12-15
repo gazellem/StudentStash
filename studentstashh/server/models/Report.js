@@ -1,26 +1,26 @@
 const mongoose = require('mongoose')
 
-const messageSchema = new mongoose.Schema({
-    from: {
+const reportSchema = new mongoose.Schema({
+    reported_user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     },
-    to: {
+    reporter: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User'
     },
-    date: {
+    description: {
         type: String,
         required: true
     },
-    content: {
+    date: {
         type: String,
         required: true
     }
 })
 
-const Message = mongoose.model('Message',messageSchema)
+const Report = mongoose.model('Report',reportSchema)
 
-module.exports = Message
+module.exports = Report

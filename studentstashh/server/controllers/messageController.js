@@ -3,7 +3,6 @@ const Message = require('../models/Message')
 const asyncHandler = require('express-async-handler')
 const Chat = require("../models/Chat");
 
-
 // @post
 const createMessage = asyncHandler(async (req, res) => {
     const {sender_username, receiver_username, content} = req.body
@@ -16,12 +15,9 @@ const createMessage = asyncHandler(async (req, res) => {
     if(!foundChat)
         foundChat = await Chat.create({"receiver": to,"sender": from})
 
-
-
     const date = new Date().toLocaleDateString()
     const messageObject = {from, to, date, content}
     const message = await Message.create(messageObject)
-
     const chatMessage = await Chat.updateOne({$and: [{sender:from}, {receiver: to}]},{$addToSet: {messages : message}})
 
     if (message && chatMessage)
@@ -36,8 +32,6 @@ const getMessagesBySender = asyncHandler(async (req, res) => {
     const {sender_username} = req.body
 
     const sender = await User.findOne({username: sender_username}).lean().exec()
-
-
     const messages = await Message.find({from: sender}).lean().exec()
 
     res.json(message)

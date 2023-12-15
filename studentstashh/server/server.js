@@ -19,13 +19,13 @@ app.use(cookieParser())
 connectDB()
 
 app.use('/', express.static(path.join(__dirname, 'public')))
+app.use('/users', require('./routes/userRoutes'))
 app.use('/', require('./routes/root'))
 app.use('/auth', require('./routes/authRoutes'))
-app.use('/users', require('./routes/userRoutes'))
 app.use('/listings',require('./routes/listingRoutes'))
 app.use('/chat',require('./routes/chatRoutes'))
 app.use('/messages',require('./routes/messageRoutes'))
-
+app.use('/reports',require('./routes/reportRoutes'))
 app.all('*', (req, res) => {
     res.status(404)
     if (req.accepts('html')) {
@@ -39,5 +39,5 @@ app.use(errorHandler)
 
 mongoose.connection.once('open', () => {
     console.log('Connected to the database')
-    app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
 })
+app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
