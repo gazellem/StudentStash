@@ -27,7 +27,8 @@ Users have the ability to block and unblock individuals as needed, ensuring a se
 ## Build Instructions
 * To ensure proper functionality of this project, it is necessary to have NodeJS v20.10.0 installed on your machine.
 *	Additionally, if you intend to use a local database, MongoDB must be installed. If not, the database URI must be set accordingly in the .env file.
-*	You need to clone this repository (https://github.com/ba2222/final) to your local machine using “git clone”.
+*	You need to clone this repository (https://github.com/gazellem/StudentStash) to your local machine using “git clone”.
+*	Make sure you are on the finalSubmission branch
 *	Launch your preferred Integrated Development Environment (IDE) and open the project folder.
 *	Open the terminal and navigate separately into the "client" and "server" folders using the commands "cd client" and "cd server," respectively.
 *	If this is your initial build of the project, execute the "npm install" command within both folders to install the necessary dependencies.
