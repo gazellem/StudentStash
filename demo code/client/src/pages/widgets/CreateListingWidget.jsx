@@ -194,7 +194,7 @@ const CreateListingWidget = ({ open, handleClose }) => {
                             label="Capacity"
                             type="text"
                             fullWidth
-                            name="capacity"
+                            name="activityCapacity"
                             value={listingData.activityCapacity}
                             onChange={handleChange}
                         />
